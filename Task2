@@ -1,0 +1,56 @@
+You first need to doenload pillow using the command
+pip install Pillow
+
+And then run the Code
+
+from PIL import Image
+
+def encrypt_image(image_path, key):
+    """Encrypts an image using a basic XOR pixel manipulation."""
+    try:
+        # Open the image and convert to 'RGB' mode to handle all types
+        img = Image.open(image_path).convert('RGB')
+        width, height = img.size
+        
+        # Create a new image to store the encrypted pixels
+        encrypted_img = Image.new('RGB', (width, height))
+        
+        # Access pixel data
+        pixels = img.load()
+        encrypted_pixels = encrypted_img.load()
+        
+        # Encrypt each pixel using XOR operation with the key
+        for y in range(height):
+            for x in range(width):
+                r, g, b = pixels[x, y]
+                encrypted_r = r ^ key
+                encrypted_g = g ^ key
+                encrypted_b = b ^ key
+                encrypted_pixels[x, y] = (encrypted_r, encrypted_g, encrypted_b)
+        
+        # Save the encrypted image
+        encrypted_file_path = "encrypted_" + image_path
+        encrypted_img.save(encrypted_file_path)
+        print(f"Image successfully encrypted and saved as: {encrypted_file_path}")
+        return encrypted_file_path
+    except FileNotFoundError:
+        print(f"Error: The file '{image_path}' was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def decrypt_image(encrypted_image_path, key):
+    """Decrypts an image by applying the same XOR pixel manipulation."""
+    # Decryption is the same as encryption with the XOR operation
+    encrypt_image(encrypted_image_path, key)
+
+# --- Example Usage ---
+# Path to your image and a key for encryption/decryption
+input_image = "your_image.jpg"  # Replace with your image file name
+encryption_key = 123
+
+# Encrypt the image
+encrypted_path = encrypt_image(input_image, encryption_key)
+
+# Decrypt the image (if encryption was successful)
+if encrypted_path:
+    decrypt_image(encrypted_path, encryption_key)
